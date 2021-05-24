@@ -1,0 +1,16 @@
+{
+    "name": "Preference",
+    "alias": "preference",
+    "description": "Preferences for some places.",
+    "keywords": [],
+    "active": 1,
+    "order": 0,
+    "providers": [
+        "Modules\\Preference\\Providers\\PreferenceServiceProvider"
+    ],
+    "aliases": {},
+    "files": [
+        "Helper/main.php"
+    ],
+    "requires": []
+}
