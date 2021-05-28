@@ -6,10 +6,10 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
+use Modules\Preference\Entities\HideInput;
 use Yajra\DataTables\Facades\DataTables;
-use Modules\Preference\Entities\HideColumn;
 
-class ColumnController extends Controller
+class InputController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -18,16 +18,16 @@ class ColumnController extends Controller
     public function index()
     {
         $collection = [];
-        $columns = DB::table('hide_columns')->join('business', 'business.id', '=', 'hide_columns.business_id')
-            ->select('hide_columns.*', 'business.name as business_name')
+        $inputs = DB::table('hide_inputs')->join('business', 'business.id', '=', 'hide_inputs.business_id')
+            ->select('hide_inputs.*', 'business.name as business_name')
             ->get();
 
-        foreach ($columns as $key => $col) {
+        foreach ($inputs as $key => $input) {
             $collection[] = [
-                'id' => $col->id,
-                'business' => $col->business_name,
-                'module' => $col->module_name,
-                'column' => $col->column_name,
+                'id' => $input->id,
+                'business' => $input->business_name,
+                'module' => $input->module_name,
+                'input' => $input->input_name,
             ];
         }
         $collection = collect($collection);
@@ -52,17 +52,17 @@ class ColumnController extends Controller
     public function store(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
-        $column = HideColumn::updateOrCreate([
+        $input = HideInput::updateOrCreate([
             'business_id' => $request->business,
             'module_name' => $request->module,
-            'column_name' => $request->column,
+            'input_name' => $request->input,
         ], [
             'user_id' => auth()->id(),
         ]);
 
         return response()->json([
             'success' => true,
-            'msg' => __("Column hide successfully for the business!")
+            'msg' => __("Input hide successfully for the business!")
         ]);
     }
 
@@ -104,12 +104,12 @@ class ColumnController extends Controller
      */
     public function destroy($id)
     {
-        $column = HideColumn::findOrFail($id);
+        $input = HideInput::findOrFail($id);
 
-        if ($column->delete())
+        if ($input->delete())
             return response()->json([
                 'status' => true,
-                'msg' => 'Column visible again!'
+                'msg' => 'Input visible again!'
             ]);
 
         return response()->json([
@@ -119,28 +119,17 @@ class ColumnController extends Controller
     }
 
     /**
-     * Get hidable columns list
+     * Get hidable input list
      * @param mixed $module
      * @return \Illuminate\Http\JsonResponse
      */
-    public function getColumns($module)
+    public function getInputs($module)
     {
         //Product list columns
         if ($module == 'Products')
             $columns = [
-                'Selling Price',
                 'Brand',
-                'Tax',
-                'Custom Field3',
-                'Custom Field4'
-            ];
-
-            //Product sell report columns
-            if ($module == 'Product Sell Report')
-            $columns = [
-                'Discount',
-                'Tax',
-                'Price Inc. Tax'
+                'Tax Inputs',
             ];
 
         return response()->json([

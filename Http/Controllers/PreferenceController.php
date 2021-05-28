@@ -21,31 +21,15 @@ class PreferenceController extends Controller
     public function index(Request $request)
     {
         $modules = [
-            'Products'
+            'Products',
+            'Product Sell Report',
         ];
-
+        $inputModules = [
+            'Products',
+        ];
         $businesses = Business::all()->pluck('name', 'id');
 
-        if ($request->ajax()) {
-            $collection = [];
-            $columns = DB::table('hide_columns')->join('business', 'business.id', '=', 'hide_columns.business_id')
-                ->select('hide_columns.*', 'business.name as business_name')
-                ->get();
-
-            foreach ($columns as $key => $col) {
-                $collection[] = [
-                    'id' => $col->id,
-                    'business' => $col->business_name,
-                    'module' => $col->module_name,
-                    'column' => $col->column_name,
-                ];
-            }
-            $collection = collect($collection);
-
-            return DataTables::collection($collection)->make(true);
-        }
-
-        return view('preference::index', compact('modules', 'businesses'));
+        return view('preference::index', compact('modules', 'inputModules', 'businesses'));
     }
 
     /**
@@ -64,19 +48,7 @@ class PreferenceController extends Controller
      */
     public function store(Request $request)
     {
-        $business_id = request()->session()->get('user.business_id');
-        $column = HideColumn::updateOrCreate([
-            'business_id' => $request->business,
-            'module_name' => $request->module,
-            'column_name' => $request->column,
-        ], [
-            'user_id' => auth()->id(),
-        ]);
-
-        return response()->json([
-            'success' => true,
-            'msg' => __("Column hide successfully for the business!")
-        ]);
+        //
     }
 
     /**
@@ -117,33 +89,6 @@ class PreferenceController extends Controller
      */
     public function destroy($id)
     {
-        $column = HideColumn::findOrFail($id);
-
-        if ($column->delete())
-            return response()->json([
-                'status' => true,
-                'msg' => 'Column visible again!'
-            ]);
-
-        return response()->json([
-            'status' => false,
-            'msg' => 'Something went wrong!'
-        ]);
-    }
-
-    public function getColumns($module)
-    {
-        if ($module == 'Products')
-            $columns = [
-                'Selling Price',
-                'Brand',
-                'Tax',
-                'Custom Field3',
-                'Custom Field4'
-            ];
-
-        return response()->json([
-            'data' => $columns ?? []
-        ]);
+        //
     }
 }

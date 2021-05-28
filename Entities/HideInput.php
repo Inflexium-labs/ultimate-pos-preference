@@ -2,18 +2,15 @@
 
 namespace Modules\Preference\Entities;
 
-use App\User;
-use App\Business;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Builder;
 
-class HideColumn extends Model
+class HideInput extends Model
 {
     protected $fillable = [
         'business_id',
         'user_id',
         'module_name',
-        'column_name',
+        'input_name',
     ];
 
     public static function boot()
@@ -21,9 +18,9 @@ class HideColumn extends Model
         parent::boot();
     }
 
-    public static function getColumns($module)
+    public static function getInputs($module)
     {
-        $columns = HideColumn::where('module_name', $module);
+        $columns = HideInput::where('module_name', $module);
     }
 
     /**
